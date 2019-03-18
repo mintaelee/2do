@@ -13,6 +13,8 @@ const completed = [];
 // Tell the browser to run init when the html is loaded.
 window.onload = init;
 
+
+
 function init() {
     // Add event listener functions that get called whenever a user interacts
     // with the respective element.
@@ -37,6 +39,10 @@ function init() {
 
     document.querySelector('#clear-completed-button')
         .addEventListener('click', clearComplete);
+
+    // Display Date
+    let d = new Date();
+    document.getElementById("date").innerHTML = d.toDateString();
 }
 
 
@@ -89,7 +95,9 @@ function completeTodo(event) {
     let completedIndex = document.querySelector('#todo-complete-index').value - 1;
 
     // Move todo at that index to the completed list.
-    completed.push(todos.splice(completedIndex,1));
+    let completedItem = todos.splice(completedIndex,1);
+    completedItem += ' \u2713';
+    completed.push(completedItem);
 
     // Update our html.
     updateTodosOl();
@@ -138,7 +146,9 @@ function markUncomplete(event) {
     let indexUncomplete = document.querySelector('#mark-uncomplete-index').value - 1;
 
     // Move todo at that index to the completed list.
-    todos.push(completed.splice(indexUncomplete,1));
+    let uncompleteItem = String(completed.splice(indexUncomplete,1));
+    let index = uncompleteItem.indexOf('\u2713');
+    todos.push(uncompleteItem.slice(0, index));
 
     // Update our html.
     updateTodosOl();
@@ -186,10 +196,12 @@ function resetAllInputs() {
 function updateTodosOl() {
     // Grab the todos ol.
     const ol = document.querySelector('#todos-list');
+
     // Clear it of children nodes.
     _clearOl(ol);
     // Re-populate it with everything from the todos array.
     _addItemsToOl(todos, ol);
+    updateTodoHeading(ol);
 }
 
 // Use this function to update the completed ol to reflect the state of our completed
@@ -197,10 +209,13 @@ function updateTodosOl() {
 function updateCompletedOl() {
     // Grab the completed ol.
     const ol = document.querySelector('#completed-list');
+
     // Clear it of children nodes.
     _clearOl(ol);
     // Re-populate it with everything from the completed array.
     _addItemsToOl(completed, ol);
+    updateCompletedHeading(ol);
+
 }
 
 // Clear all children of the given ol.
@@ -230,4 +245,27 @@ function _addItemToOl(item, ol) {
     newLi.innerText = item;
     // Append it to the given ol.
     ol.appendChild(newLi);
+}
+
+// Update the heading when user inputs
+
+function updateTodoHeading(ol) {
+    // Grab and print the heading of the todo list
+    const todoHeading = document.querySelector('#todos-heading');
+    if(ol.hasChildNodes()) {
+        todoHeading.innerText = 'List of things to-do:'
+    }else {
+        todoHeading.innerText = '';
+    }
+}
+
+function updateCompletedHeading(ol) {
+    // Grab and print the heading of the completed list
+    const completedHeading = document.querySelector('#completed-heading');
+
+    if(ol.hasChildNodes()) {
+        completedHeading.innerText = 'You have completed the following:'
+    } else {
+        completedHeading.innerText = '';
+    }
 }
